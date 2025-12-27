@@ -7,6 +7,7 @@ const prisma = new PrismaClient();
 // Register a new user
 exports.register = async (req, res) => {
   try {
+    console.log("Registering user:", req.body);
     const { name, email, password, role } = req.body;
     
     // Validate role
