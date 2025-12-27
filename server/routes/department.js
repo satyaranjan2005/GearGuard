@@ -5,7 +5,7 @@ const authMiddleware = require('../middlewares/auth');
 const router = express.Router();
 
 // POST /api/departments - Create a new department
-router.post('/', authMiddleware,Department.createDepartment);
+router.post('/',Department.createDepartment);
 // GET /api/departments - Get all departments
 router.get('/', authMiddleware,Department.getAllDepartments);
 

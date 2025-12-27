@@ -10,7 +10,7 @@ router.get('/', auth, maintenanceTeamController.getAllTeams);
 router.get('/:id', auth, maintenanceTeamController.getTeamById);
 
 // Create new maintenance team
-router.post('/', auth, maintenanceTeamController.createTeam);
+router.post('/', maintenanceTeamController.createTeam);
 
 // Update maintenance team
 router.put('/:id', auth, maintenanceTeamController.updateTeam);

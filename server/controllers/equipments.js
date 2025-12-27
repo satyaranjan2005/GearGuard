@@ -47,7 +47,7 @@ const getEquipmentById = async (req, res) => {
 // Create new equipment
 const createEquipment = async (req, res) => {
     try {
-        const { name, serialNumber, purchaseDate, warrantyExpiry, location, departmentId, employeeId, teamId, technicianId } = req.body;
+        const { name, serialNumber, purchaseDate, warrantyExpiry, location, departmentId, employeeId, teamId } = req.body;
         
         // Automatically assign a technician (e.g., least busy or round-robin)
         const technician = await prisma.technician.findFirst({

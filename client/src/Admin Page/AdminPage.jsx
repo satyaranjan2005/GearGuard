@@ -6,52 +6,45 @@ import {
   FiUserPlus, FiPlusCircle, FiLock, FiBox, FiCheckCircle,
   FiMonitor, FiTool, FiZap, FiGlobe, FiCpu, FiSmartphone, FiTarget, FiStar
 } from 'react-icons/fi';
+import { registerUser } from '../services/authService';
+import { createDepartment } from '../services/departmentService';
+import { createMaintenanceTeam } from '../services/maintenanceTeamService';
+import { createEquipment } from '../services/equipmentService';
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  
-  // Users state
-  const [users, setUsers] = useState([
-    { name: 'John Doe', email: 'john@example.com', role: 'Technician', team: 'IT Support', status: 'Active', avatar: 'from-violet-600 to-indigo-600' },
-    { name: 'Jane Smith', email: 'jane@example.com', role: 'Technician', team: 'Mechanical', status: 'Active', avatar: 'from-violet-600 to-indigo-600' },
-    { name: 'Mike Johnson', email: 'mike@example.com', role: 'User', team: 'None', status: 'Active', avatar: 'from-violet-600 to-indigo-600' },
-    { name: 'Sarah Williams', email: 'sarah@example.com', role: 'Manager', team: 'IT Support', status: 'Active', avatar: 'from-violet-600 to-indigo-600' },
-    { name: 'Tom Brown', email: 'tom@example.com', role: 'User', team: 'None', status: 'Inactive', avatar: 'from-gray-400 to-gray-500' }
-  ]);
-
-  // Teams state
-  const [teams, setTeams] = useState([
-    { name: 'IT Support', members: 24, gradient: 'from-violet-600 to-indigo-600', icon: FiMonitor },
-    { name: 'Mechanical', members: 18, gradient: 'from-violet-600 to-indigo-600', icon: FiTool },
-    { name: 'Electrical', members: 15, gradient: 'from-violet-600 to-indigo-600', icon: FiZap },
-    { name: 'Network', members: 12, gradient: 'from-violet-600 to-indigo-600', icon: FiGlobe }
-  ]);
-
-  // Form data state
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    role: 'User',
-    team: 'None',
-    status: 'Active',
-    icon: FiBriefcase,
-    description: ''
+    role: '',
+    password: '',
+    serialNumber: '',
+    purchaseDate: '',
+    warrantyExpiry: '',
+    location: '',
+    departmentId: '',
+    employeeId: '',
+    teamId: ''
   });
 
   const openModal = (type) => {
     setModalType(type);
     setShowModal(true);
-    setFormData({
-      name: '',
-      email: '',
-      role: 'User',
-      team: 'None',
-      status: 'Active',
-      icon: FiBriefcase,
-      description: ''
+    setFormData({ 
+      name: '', 
+      email: '', 
+      role: '', 
+      password: '',
+      serialNumber: '',
+      purchaseDate: '',
+      warrantyExpiry: '',
+      location: '',
+      departmentId: '',
+      employeeId: '',
+      teamId: ''
     });
   };
 
@@ -62,44 +55,86 @@ const AdminPage = () => {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (modalType === 'adduser') {
-      const avatarGradients = [
-        'from-violet-600 to-indigo-600',
-        'from-violet-600 to-indigo-600',
-        'from-violet-600 to-indigo-600',
-        'from-violet-600 to-indigo-600',
-        'from-violet-600 to-indigo-600'
-      ];
-      const newUser = {
-        name: formData.name,
-        email: formData.email,
-        role: formData.role,
-        team: formData.team,
-        status: formData.status,
-        avatar: avatarGradients[Math.floor(Math.random() * avatarGradients.length)]
-      };
-      setUsers([newUser, ...users]);
-    } else if (modalType === 'createteam') {
-      const teamGradients = [
-        'from-violet-600 to-indigo-600',
-        'from-violet-600 to-indigo-600',
-        'from-violet-600 to-indigo-600',
-        'from-violet-600 to-indigo-600',
-        'from-violet-600 to-indigo-600',
-        'from-violet-600 to-indigo-600'
-      ];
-      const newTeam = {
-        name: formData.name,
-        members: 0,
-        gradient: teamGradients[Math.floor(Math.random() * teamGradients.length)],
-        icon: formData.icon
-      };
-      setTeams([...teams, newTeam]);
+      try {
+        const response = await registerUser({
+          name: formData.name,
+          email: formData.email,
+          role: formData.role,
+          password: formData.password
+        });
+        console.log('User registered successfully:', response);
+        alert('User registered successfully!');
+        setShowModal(false);
+        setFormData({ name: '', email: '', role: '', password: '' });
+      } catch (error) {
+        console.error('Registration failed:', error);
+        alert(`Registration failed: ${error.message || 'Unknown error'}`);
+      }
+    } else if (modalType === 'createdepartment') {
+      try {
+        const response = await createDepartment({
+          name: formData.name
+        });
+        console.log('Department created successfully:', response);
+        alert('Department created successfully!');
+        setShowModal(false);
+        setFormData({ name: '', email: '', role: '', password: '' });
+      } catch (error) {
+        console.error('Department creation failed:', error);
+        alert(`Department creation failed: ${error.message || 'Unknown error'}`);
+      }
+    } else if (modalType === 'createmaintenanceteam') {
+      try {
+        const response = await createMaintenanceTeam({
+          name: formData.name
+        });
+        console.log('Maintenance team created successfully:', response);
+        alert('Maintenance team created successfully!');
+        setShowModal(false);
+        setFormData({ name: '', email: '', role: '', password: '' });
+      } catch (error) {
+        console.error('Maintenance team creation failed:', error);
+        alert(`Maintenance team creation failed: ${error.message || 'Unknown error'}`);
+      }
+    } else if (modalType === 'addequipment') {
+      try {
+        const response = await createEquipment({
+          name: formData.name,
+          serialNumber: formData.serialNumber,
+          purchaseDate: formData.purchaseDate,
+          warrantyExpiry: formData.warrantyExpiry,
+          location: formData.location,
+          departmentId: formData.departmentId,
+          employeeId: formData.employeeId,
+          teamId: formData.teamId
+        });
+        console.log('Equipment created successfully:', response);
+        alert('Equipment created successfully!');
+        setShowModal(false);
+        setFormData({ 
+          name: '', 
+          email: '', 
+          role: '', 
+          password: '',
+          serialNumber: '',
+          purchaseDate: '',
+          warrantyExpiry: '',
+          location: '',
+          departmentId: '',
+          employeeId: '',
+          teamId: ''
+        });
+      } catch (error) {
+        console.error('Equipment creation failed:', error);
+        alert(`Equipment creation failed: ${error.message || 'Unknown error'}`);
+      }
     }
-    setShowModal(false);
   };
 
+
+ 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       {/* Sidebar */}
@@ -304,13 +339,13 @@ const AdminPage = () => {
                   <div className="grid grid-cols-4 gap-3">
                     {[
                       { label: 'Add User', icon: FiUserPlus, gradient: 'from-violet-600 to-indigo-600' },
-                      { label: 'Create Team', icon: FiPlusCircle, gradient: 'from-violet-600 to-indigo-600' },
-                      { label: 'Add Role', icon: FiLock, gradient: 'from-violet-600 to-indigo-600' },
+                      { label: 'Create Maintenance Team', icon: FiPlusCircle, gradient: 'from-violet-600 to-indigo-600' },
+                      { label: 'Create Department', icon: FiBriefcase, gradient: 'from-violet-600 to-indigo-600' },
                       { label: 'Add Equipment', icon: FiBox, gradient: 'from-violet-600 to-indigo-600' }
                     ].map((action, idx) => (
                       <button
                         key={idx}
-                        onClick={() => openModal(action.label.toLowerCase().replace(' ', ''))}
+                        onClick={() => openModal(action.label.toLowerCase().replace(/\s+/g, ''))}
                         className={`group flex flex-col items-center justify-center p-6 rounded-2xl bg-gradient-to-br ${action.gradient} hover:shadow-2xl transition-all duration-300 hover:-translate-y-1`}
                       >
                         <action.icon className="text-white text-3xl mb-2 transform group-hover:scale-110 transition-transform" />
@@ -347,46 +382,7 @@ const AdminPage = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {users.map((user, idx) => (
-                          <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50 transition-colors group">
-                            <td className="py-4 px-4">
-                              <div className="flex items-center space-x-3">
-                                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${user.avatar} flex items-center justify-center shadow-md`}>
-                                  <span className="text-white text-sm font-bold">{user.name.split(' ').map(n => n[0]).join('')}</span>
-                                </div>
-                                <div>
-                                  <p className="text-sm font-semibold text-gray-900">{user.name}</p>
-                                  <p className="text-xs text-gray-500">{user.email}</p>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="py-4 px-4">
-                              <span className="px-3 py-1 rounded-lg text-xs font-bold bg-violet-100 text-violet-700">
-                                {user.role}
-                              </span>
-                            </td>
-                            <td className="py-4 px-4 text-sm text-gray-600">{user.team}</td>
-                            <td className="py-4 px-4">
-                              <span className={`px-3 py-1 rounded-lg text-xs font-bold ${
-                                user.status === 'Active' 
-                                  ? 'bg-green-100 text-green-700' 
-                                  : 'bg-red-100 text-red-700'
-                              }`}>
-                                {user.status}
-                              </span>
-                            </td>
-                            <td className="py-4 px-4">
-                              <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button className="p-2 hover:bg-blue-50 rounded-lg transition-colors">
-                                  <FiEdit2 className="w-4 h-4 text-blue-600" />
-                                </button>
-                                <button className="p-2 hover:bg-red-50 rounded-lg transition-colors">
-                                  <FiTrash2 className="w-4 h-4 text-red-600" />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
+                        {/* User rows will be populated from API */}
                       </tbody>
                     </table>
                   </div>
@@ -435,18 +431,7 @@ const AdminPage = () => {
                     </button>
                   </div>
                   <div className="space-y-3">
-                    {teams.map((team, idx) => (
-                      <div key={idx} className="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer">
-                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${team.gradient} flex items-center justify-center shadow-md`}>
-                          <team.icon className="text-white text-xl" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-semibold text-gray-900">{team.name}</p>
-                          <p className="text-xs text-gray-500">{team.members} members</p>
-                        </div>
-                        <FiChevronRight className="w-5 h-5 text-gray-400" />
-                      </div>
-                    ))}
+                    {/* Teams will be populated from API */}
                   </div>
                 </div>
               </div>
@@ -460,7 +445,7 @@ const AdminPage = () => {
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-2xl font-bold text-gray-900">All Users</h3>
-                  <button onClick={() => openModal('adduser')} className="px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold">
+                  <button onClick={() => setShowModal(true)} className="px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold">
                     + Add New User
                   </button>
                 </div>
@@ -476,30 +461,7 @@ const AdminPage = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {users.map((user, idx) => (
-                        <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                          <td className="py-4 px-4">
-                            <div className="flex items-center space-x-3">
-                              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${user.avatar} flex items-center justify-center shadow-md`}>
-                                <span className="text-white font-bold">{user.name.split(' ').map(n => n[0]).join('')}</span>
-                              </div>
-                              <div>
-                                <p className="font-semibold text-gray-900">{user.name}</p>
-                                <p className="text-sm text-gray-500">{user.email}</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="py-4 px-4"><span className="px-3 py-1 rounded-lg text-sm font-bold bg-violet-100 text-violet-700">{user.role}</span></td>
-                          <td className="py-4 px-4 text-gray-600">{user.team}</td>
-                          <td className="py-4 px-4"><span className={`px-3 py-1 rounded-lg text-sm font-bold ${user.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{user.status}</span></td>
-                          <td className="py-4 px-4">
-                            <div className="flex space-x-2">
-                              <button className="p-2 hover:bg-blue-50 rounded-lg"><FiEdit2 className="w-5 h-5 text-blue-600" /></button>
-                              <button className="p-2 hover:bg-red-50 rounded-lg"><FiTrash2 className="w-5 h-5 text-red-600" /></button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
+                      {/* User rows will be populated from API */}
                     </tbody>
                   </table>
                 </div>
@@ -534,21 +496,12 @@ const AdminPage = () => {
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-2xl font-bold text-gray-900">All Teams</h3>
-                  <button onClick={() => openModal('createteam')} className="px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold">
-                    + Create Team
+                  <button onClick={() => setShowModal(true)} className="px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold">
+                    + Create Maintenance Team
                   </button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {teams.map((team, idx) => (
-                    <div key={idx} className="bg-gradient-to-br from-violet-50 to-indigo-50 rounded-2xl border-2 border-violet-200 p-6 hover:shadow-xl transition-all">
-                      <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${team.gradient} flex items-center justify-center shadow-lg mb-4`}>
-                        <team.icon className="text-white text-3xl" />
-                      </div>
-                      <h4 className="text-xl font-bold text-gray-900 mb-2">{team.name}</h4>
-                      <p className="text-gray-600 mb-4">{team.members} members</p>
-                      <button className="w-full py-2 bg-white border-2 border-violet-300 text-violet-600 rounded-xl hover:bg-violet-50 transition-all font-semibold">Manage Team</button>
-                    </div>
-                  ))}
+                  {/* Teams will be populated from API */}
                 </div>
               </div>
             </div>
@@ -560,7 +513,7 @@ const AdminPage = () => {
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-2xl font-bold text-gray-900">Equipment Inventory</h3>
-                  <button onClick={() => openModal('addequipment')} className="px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold">
+                  <button onClick={() => setShowModal(true)} className="px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl hover:shadow-lg transition-all font-semibold">
                     + Add Equipment
                   </button>
                 </div>
@@ -675,12 +628,12 @@ const AdminPage = () => {
       {/* Modal Overlay */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl transform transition-all">
-            <div className="flex justify-between items-center mb-6">
+          <div className="bg-white rounded-3xl p-8 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl transform transition-all">
+            <div className="flex justify-between items-center mb-6 sticky top-0 bg-white pb-4 border-b border-gray-100">
               <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                 {modalType === 'adduser' && <><FiUserPlus className="text-violet-600" /> Add New User</>}
-                {modalType === 'createteam' && <><FiPlusCircle className="text-violet-600" /> Create New Team</>}
-                {modalType === 'addrole' && <><FiLock className="text-violet-600" /> Add New Role</>}
+                {modalType === 'createmaintenanceteam' && <><FiPlusCircle className="text-violet-600" /> Create Maintenance Team</>}
+                {modalType === 'createdepartment' && <><FiBriefcase className="text-violet-600" /> Create Department</>}
                 {modalType === 'addequipment' && <><FiBox className="text-violet-600" /> Add Equipment</>}
               </h3>
               <button 
@@ -724,31 +677,29 @@ const AdminPage = () => {
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                   >
-                    <option value="User">User</option>
-                    <option value="Technician">Technician</option>
-                    <option value="Manager">Manager</option>
-                    <option value="Admin">Admin</option>
+                    <option value="">Select a role</option>
+                    <option value="ADMIN">Admin</option>
+                    <option value="MANAGER">Manager</option>
+                    <option value="EMPLOYEE">Employee</option>
+                    <option value="TECHNICIAN">Technician</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Team</label>
-                  <select
-                    name="team"
-                    value={formData.team}
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
                     onChange={handleInputChange}
+                    placeholder="Enter password"
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                  >
-                    <option value="None">None</option>
-                    {teams.map((team, idx) => (
-                      <option key={idx} value={team.name}>{team.name}</option>
-                    ))}
-                  </select>
+                  />
                 </div>
               </div>
             )}
 
-            {/* Create Team Form */}
-            {modalType === 'createteam' && (
+            {/* Create Maintenance Team Form */}
+            {modalType === 'createmaintenanceteam' && (
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Team Name</label>
@@ -757,67 +708,26 @@ const AdminPage = () => {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    placeholder="Enter team name"
+                    placeholder="Enter maintenance team name"
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Team Icon</label>
-                  <div className="grid grid-cols-6 gap-2">
-                    {[FiMonitor, FiTool, FiZap, FiGlobe, FiSettings, FiCpu, FiSmartphone, FiBriefcase, FiTarget, FiActivity, FiStar, FiPackage].map((IconComponent, index) => (
-                      <button
-                        key={index}
-                        type="button"
-                        onClick={() => setFormData({...formData, icon: IconComponent})}
-                        className={`p-3 rounded-xl border-2 transition-all ${
-                          formData.icon === IconComponent
-                            ? 'border-violet-500 bg-violet-50'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                      >
-                        <IconComponent className="text-2xl text-gray-700 mx-auto" />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    placeholder="Brief team description"
-                    rows="3"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent resize-none"
-                  ></textarea>
                 </div>
               </div>
             )}
 
-            {/* Add Role Form */}
-            {modalType === 'addrole' && (
+            {/* Create Department Form */}
+            {modalType === 'createdepartment' && (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Role Name</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Department Name</label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    placeholder="Enter role name"
+                    placeholder="Enter department name"
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Permissions</label>
-                  <div className="space-y-2">
-                    {['View Dashboard', 'Manage Users', 'Manage Teams', 'Manage Equipment', 'Approve Requests', 'View Reports'].map((perm) => (
-                      <label key={perm} className="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 cursor-pointer">
-                        <input type="checkbox" className="w-5 h-5 text-violet-600 rounded focus:ring-2 focus:ring-violet-500" />
-                        <span className="text-sm text-gray-700">{perm}</span>
-                      </label>
-                    ))}
-                  </div>
                 </div>
               </div>
             )}
@@ -837,40 +747,79 @@ const AdminPage = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
-                  <select
-                    name="team"
-                    value={formData.team}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                  >
-                    <option value="Electronics">Electronics</option>
-                    <option value="Tools">Tools</option>
-                    <option value="Safety">Safety Equipment</option>
-                    <option value="Accessories">Accessories</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Quantity</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Serial Number</label>
                   <input
-                    type="number"
-                    name="email"
-                    value={formData.email}
+                    type="text"
+                    name="serialNumber"
+                    value={formData.serialNumber}
                     onChange={handleInputChange}
-                    placeholder="0"
+                    placeholder="Enter serial number"
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Purchase Date</label>
+                  <input
+                    type="date"
+                    name="purchaseDate"
+                    value={formData.purchaseDate}
                     onChange={handleInputChange}
-                    placeholder="Equipment details"
-                    rows="3"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent resize-none"
-                  ></textarea>
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Warranty Expiry</label>
+                  <input
+                    type="date"
+                    name="warrantyExpiry"
+                    value={formData.warrantyExpiry}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Location</label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    placeholder="Enter location"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Department ID</label>
+                  <input
+                    type="text"
+                    name="departmentId"
+                    value={formData.departmentId}
+                    onChange={handleInputChange}
+                    placeholder="Enter department ID"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Employee ID</label>
+                  <input
+                    type="text"
+                    name="employeeId"
+                    value={formData.employeeId}
+                    onChange={handleInputChange}
+                    placeholder="Enter employee ID"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Team ID</label>
+                  <input
+                    type="text"
+                    name="teamId"
+                    value={formData.teamId}
+                    onChange={handleInputChange}
+                    placeholder="Enter team ID"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                  />
                 </div>
               </div>
             )}
@@ -886,7 +835,7 @@ const AdminPage = () => {
                 onClick={handleSubmit}
                 className="flex-1 px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl hover:shadow-lg hover:shadow-violet-500/30 transition-all font-semibold"
               >
-                Create
+                Submit
               </button>
             </div>
           </div>
