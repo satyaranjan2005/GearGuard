@@ -12,6 +12,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
     "axion": "^0.1.0",
+    "axios": "^1.13.2",
     "date-fns": "^4.1.0",
     "react": "^19.2.0",
     "react-calendar": "^5.1.0",
